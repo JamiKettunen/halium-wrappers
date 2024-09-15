@@ -1,12 +1,13 @@
+PKG_CONFIG ?= pkg-config
 TRIPLET ?= $(shell gcc -dumpmachine)
 DESTDIR ?= /
 
 PACKAGES = libandroid-properties
 GLESSHADERCACHE_PACKAGES = glesv2 gl
 
-CFLAGS = -O2 $(shell pkg-config --cflags $(PACKAGES))
-LIBS = $(shell pkg-config --libs $(PACKAGES))
-GLESSHADERCACHE_LIBS = $(shell pkg-config --libs $(GLESSHADERCACHE_PACKAGES))
+CFLAGS = -O2 $(shell $(PKG_CONFIG) --cflags $(PACKAGES))
+LIBS = $(shell $(PKG_CONFIG) --libs $(PACKAGES))
+GLESSHADERCACHE_LIBS = $(shell $(PKG_CONFIG) --libs $(GLESSHADERCACHE_PACKAGES))
 
 SYMLINKS = \
 	android_bootctl \
