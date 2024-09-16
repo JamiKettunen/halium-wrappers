@@ -28,6 +28,10 @@
 #include <hybris/properties/properties.h>
 #include <hybris/common/binding.h>
 
+#if !defined(FNM_EXTMATCH)
+#define FNM_EXTMATCH 0
+#endif
+
 static void *libc = NULL;
 
 static int tripped = 0;
