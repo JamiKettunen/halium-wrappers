@@ -53,7 +53,7 @@ stop() {
 
 ANDROID_SERVICE=${ANDROID_SERVICE:-${ANDROID_SERVICE_SINGLE}}
 
-service=$(grep -roP "service ${ANDROID_SERVICE} /.*" /system/etc/init /vendor/etc/init | head -n 1)
+service=$(grep -Er "service ${ANDROID_SERVICE} /.*" /system/etc/init /vendor/etc/init | head -n 1)
 if [ -z "${service}" ]; then
 	error "Unable to detect service"
 fi
