@@ -1,16 +1,23 @@
 #!/bin/sh
 
-#HWCOMPOSER_SERVICES="(vendor.hwcomposer-.*|vendor.qti.hardware.display.composer)"
-ANDROID_SERVICE_SINGLE="${1}"
 ANDROID_SERVICE_ACTION="${2}"
 ANDROID_SERVICE_STAMP_DIRECTORY="/run/android-service"
-ANDROID_SERVICE_STAMP="${ANDROID_SERVICE_STAMP_DIRECTORY}/${ANDROID_SERVICE_SINGLE}-stamp"
 LXC_CONTAINER_NAME="android"
 
 error() {
 	echo "E: ${@}" >&2
 	exit 1
 }
+
+: "${ANDROID_SERVICE:=${1}}"
+service=$(grep -Er "service ${ANDROID_SERVICE} /.*" /system/etc/init /vendor/etc/init | head -n 1)
+if [ -z "${service}" ]; then
+	error "Unable to detect service"
+fi
+service_service=$(echo ${service} | awk '{ print $2 }')
+service_path=$(echo ${service} | awk '{ print $3 }')
+service_process=$(echo ${service_path} | awk -F "/" '{print $NF}')
+ANDROID_SERVICE_STAMP="${ANDROID_SERVICE_STAMP_DIRECTORY}/${service_service}-stamp"
 
 current_status() {
 	getprop init.svc.${service_service}
@@ -50,17 +57,6 @@ stop() {
 		setprop init.svc.${service_service} stopped
 	fi
 }
-
-ANDROID_SERVICE=${ANDROID_SERVICE:-${ANDROID_SERVICE_SINGLE}}
-
-service=$(grep -Er "service ${ANDROID_SERVICE} /.*" /system/etc/init /vendor/etc/init | head -n 1)
-if [ -z "${service}" ]; then
-	error "Unable to detect service"
-fi
-
-service_service=$(echo ${service} | awk '{ print $2 }')
-service_path=$(echo ${service} | awk '{ print $3 }')
-service_process=$(echo ${service_path} | awk -F "/" '{print $NF}')
 
 mkdir -p "${ANDROID_SERVICE_STAMP_DIRECTORY}"
 
