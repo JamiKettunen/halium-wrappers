@@ -52,7 +52,7 @@ stop() {
 	if [ -z "${ANDROID_SERVICE_FORCE_KILL}" ]; then
 		WAITFORSERVICE_VALUE="stopped" timeout 5 waitforservice init.svc.${service_service}
 	else
-		pid=$(lxc-attach -n ${LXC_CONTAINER_NAME} -- /bin/pidof ${service_process} \;)
+		pid=$(lxc-attach -n ${LXC_CONTAINER_NAME} -- /bin/pidof ${service_process})
 		[ -n "${pid}" ] && android_kill -9 ${pid}
 		setprop init.svc.${service_service} stopped
 	fi
