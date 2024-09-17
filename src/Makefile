@@ -23,7 +23,7 @@ SYMLINKS = \
 	logcat \
 	lshal
 
-all: waitforservice libtls-padding.so
+all: waitforservice libtls-padding.so libglesshadercache.so libgtk6216workaround.so
 
 waitforservice: waitforservice.c
 	# hybris-common lacks a proper pkg-config definition
