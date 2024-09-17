@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 #HWCOMPOSER_SERVICES="(vendor.hwcomposer-.*|vendor.qti.hardware.display.composer)"
 ANDROID_SERVICE_SINGLE="${1}"
@@ -17,7 +17,7 @@ current_status() {
 }
 
 start() {
-	[ "$(current_status)" == "running" ] && return 0
+	[ "$(current_status)" = "running" ] && return 0
 
 	# Start operation is weird since it's kickstarted by Android's
 	# init - thus we assume that if ${ANDROID_SERVICE_STAMP} doesn't
@@ -37,18 +37,16 @@ start() {
 }
 
 stop() {
-	[ "$(current_status)" == "stopped" ] && return 0
+	[ "$(current_status)" = "stopped" ] && return 0
 
 	# Try to gracefully stop via the Android-provided facilities
 	android_stop ${service_service}
 
-	if [ "${ANDROID_SERVICE_FORCE_KILL}" != "yes" ]; then
+	if [ -z "${ANDROID_SERVICE_FORCE_KILL}" ]; then
 		WAITFORSERVICE_VALUE="stopped" timeout 5 waitforservice init.svc.${service_service}
-	fi
-
-	if [ "${ANDROID_SERVICE_FORCE_KILL}" == "yes" ] ; then
+	else
 		pid=$(lxc-attach -n ${LXC_CONTAINER_NAME} -- /bin/pidof ${service_process} \;)
-		[ "${pid}" != "" ] && android_kill -9 ${pid}
+		[ -n "${pid}" ] && android_kill -9 ${pid}
 		setprop init.svc.${service_service} stopped
 	fi
 }
