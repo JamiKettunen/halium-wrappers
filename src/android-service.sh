@@ -23,8 +23,21 @@ current_status() {
 	getprop init.svc.${service_service}
 }
 
+dinit_ready() {
+	[ "${ANDROID_SERVICE_READY_FD}" ] || return
+
+	# Notify dinit we're done (service started)
+	echo > /dev/fd/${ANDROID_SERVICE_READY_FD}
+
+	# Then simply block until the service is no longer running
+	WAITFORSERVICE_VALUE_NOT=running waitforservice init.svc.${service_service}
+}
+
 start() {
-	[ "$(current_status)" = "running" ] && return 0
+	if [ "$(current_status)" = "running" ]; then
+		dinit_ready
+		return 0
+	fi
 
 	# Start operation is weird since it's kickstarted by Android's
 	# init - thus we assume that if ${ANDROID_SERVICE_STAMP} doesn't
@@ -41,6 +54,7 @@ start() {
 
 	# Once we return, create the stamp file
 	touch ${ANDROID_SERVICE_STAMP}
+	dinit_ready
 }
 
 stop() {
