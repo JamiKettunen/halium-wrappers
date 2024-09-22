@@ -24,4 +24,4 @@ found_path=$(whereis -b -B ${ANDROID_SEARCH_PATH} -f ${TARGET_BINARY} | awk '{ p
 unset LD_PRELOAD
 
 # Finally execute
-exec /usr/bin/lxc-attach -n ${LXC_CONTAINER_NAME} -- ${found_path#${LXC_CONTAINER_PATH}} "${@}" \;
+exec lxc-attach -n ${LXC_CONTAINER_NAME} -- ${found_path#${LXC_CONTAINER_PATH}} "${@}" \;
