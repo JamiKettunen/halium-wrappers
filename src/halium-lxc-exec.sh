@@ -8,7 +8,7 @@ error() {
 HOST_BINARY="${0##*/}"
 TARGET_BINARY="${HOST_BINARY#android_}"
 LXC_CONTAINER_NAME="android"
-LXC_CONTAINER_PATH="/var/lib/lxc/${LXC_CONTAINER_NAME}/rootfs"
+LXC_CONTAINER_PATH="$(sed -n 's/^lxc.rootfs.path = //p' /var/lib/lxc/${LXC_CONTAINER_NAME}/config)"
 ANDROID_SEARCH_PATH="${LXC_CONTAINER_PATH}/system/bin ${LXC_CONTAINER_PATH}/system/xbin ${LXC_CONTAINER_PATH}/vendor/bin"
 
 ########################################################################
