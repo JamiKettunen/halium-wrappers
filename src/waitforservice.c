@@ -24,6 +24,7 @@
 #include <fnmatch.h>
 #include <dlfcn.h>
 #include <unistd.h>
+#include <sys/param.h>
 
 #include <hybris/properties/properties.h>
 #include <hybris/common/binding.h>
@@ -35,6 +36,7 @@
 static void *libc = NULL;
 
 static int tripped = 0;
+static int not_mode = 0;
 
 static const char* property_value;
 
@@ -97,7 +99,7 @@ static void parse_properties(const char* key, const char* name, void* cookie)
 
     for (int i = 1; i < args->count; i++) {
         if (fnmatch(args->argv[i], key, FNM_NOESCAPE | FNM_EXTMATCH) == 0 &&
-                strcmp(name, property_value) == 0) {
+            MIN(abs(strcmp(name, property_value)), 1) == not_mode) {
             /* Found something! */
             fprintf(stdout, "%s: %s\n", key, name);
             tripped = 1;
@@ -116,11 +118,16 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    const char* selected_property_value = getenv("WAITFORSERVICE_VALUE");
-    if (selected_property_value != NULL) {
-        property_value = selected_property_value;
+    const char* selected_property_value_not = getenv("WAITFORSERVICE_VALUE_NOT");
+    if (selected_property_value_not != NULL) {
+        not_mode = 1;
+        property_value = selected_property_value_not;
     } else {
-        property_value = "running";
+        const char* selected_property_value = getenv("WAITFORSERVICE_VALUE");
+        if (selected_property_value != NULL)
+            property_value = selected_property_value;
+        else
+            property_value = "running";
     }
 
     wait_for_property_service();
