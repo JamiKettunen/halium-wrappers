@@ -56,7 +56,7 @@ install: waitforservice libtls-padding.so libglesshadercache.so libgtk6216workar
 	install -m 644 systemd/android-service@hwcomposer.service.d/10-hwcomposer.conf $(DESTDIR)/usr/lib/systemd/system/android-service@hwcomposer.service.d
 
 	for link in $(SYMLINKS); do \
-		ln -s /usr/lib/halium-wrappers/halium-lxc-exec.sh $(DESTDIR)$(SBINDIR)/$${link}; \
+		ln -sr /usr/lib/halium-wrappers/halium-lxc-exec.sh $(DESTDIR)$(SBINDIR)/$${link}; \
 	done
 
 .PHONY: all install
