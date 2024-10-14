@@ -35,6 +35,7 @@ dinit_ready() {
 
 start() {
 	if [ "$(current_status)" = "running" ]; then
+		[ "${ANDROID_SERVICE_FORCE_STAMP}" ] && touch ${ANDROID_SERVICE_STAMP}
 		dinit_ready
 		return 0
 	fi
