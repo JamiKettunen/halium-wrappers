@@ -21,6 +21,7 @@ SYMLINKS = \
 	android_start \
 	android_kill \
 	android_ldd \
+	android_file \
 	logcat \
 	lshal
 
