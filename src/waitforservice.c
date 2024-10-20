@@ -108,7 +108,7 @@ static void parse_properties(const char* key, const char* name, void* cookie)
     }
 }
 
-int main(int argc, char **argv)
+int main(int argc, char **argv, char **envp)
 {
     arguments_t arguments = { .count = argc, .argv = argv };
     unsigned serial;
@@ -118,16 +118,17 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    const char* selected_property_value_not = getenv("WAITFORSERVICE_VALUE_NOT");
-    if (selected_property_value_not != NULL) {
-        not_mode = 1;
-        property_value = selected_property_value_not;
-    } else {
-        const char* selected_property_value = getenv("WAITFORSERVICE_VALUE");
-        if (selected_property_value != NULL)
-            property_value = selected_property_value;
-        else
-            property_value = "running";
+    for (int i = 0; envp[i] != NULL; i++) {
+        if (strncmp(envp[i], "WAITFORSERVICE_NOT_VALUE=", strlen("WAITFORSERVICE_NOT_VALUE=")) == 0) {
+            const char* val = getenv("WAITFORSERVICE_NOT_VALUE");
+            property_value = val ? val : "";
+            not_mode = 1;
+            break;
+        } else if (strncmp(envp[i], "WAITFORSERVICE_VALUE=", strlen("WAITFORSERVICE_VALUE=")) == 0) {
+            const char* val = getenv("WAITFORSERVICE_VALUE");
+            property_value = val ? val : "running";
+            break;
+        }
     }
 
     wait_for_property_service();
